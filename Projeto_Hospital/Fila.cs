@@ -79,6 +79,20 @@ namespace Projeto_Hospital
             return null;
         }
 
+        public void Remover(string cpf)
+        {
+            if (Elementos == 0) return;
+
+            if (Cabeca.CPF == cpf)
+            {
+                Cabeca = Cabeca.Proximo;
+                Elementos--;
+            }
+
+            if (Cabeca == null)
+                Cauda = null;
+        }
+
 
 
         public void InserirDadosNoArquivo(Paciente paciente, string arquivo)
@@ -192,7 +206,25 @@ namespace Projeto_Hospital
 
         }
 
+        public void RemoverDadosDoArquivo(Fila fila, string arquivo)
+        {
+            try
+            {
+                StreamWriter sw = new StreamWriter($"{PathFile}\\{arquivo}.txt");
 
+                fila.Remover(fila.Cabeca.CPF);
+
+                for (Paciente paciente = Cabeca; paciente != null; paciente = paciente.Proximo)
+                    sw.WriteLine($"{paciente.CPF};{paciente.Nome};{paciente.DataNasc.ToString("dd/MM/yyyy")};{paciente.Sexo};");
+
+                sw.Close();
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+        }
 
         public bool Vazia()
         {

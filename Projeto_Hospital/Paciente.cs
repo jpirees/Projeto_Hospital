@@ -61,7 +61,7 @@ namespace Projeto_Hospital
                     File.Create("Pacientes.txt").Close();
                     return null;
                 }
-                
+
             }
             catch (Exception e)
             {
@@ -98,5 +98,50 @@ namespace Projeto_Hospital
 
             return null;
         }
+
+
+        public void SalvarFichaDoPaciente(string cpf, string[] sintomas, int dias, string[] comorbidades)
+        {
+            bool historicoPaciente = false;
+
+            try
+            {
+                if (Directory.Exists("Historico"))
+                    historicoPaciente = true;
+                else
+                {
+                    Directory.CreateDirectory("Historico");
+                    historicoPaciente = true;
+                }
+            } 
+            catch(Exception e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+
+            if (historicoPaciente)
+            {
+                try
+                {
+                    StreamWriter sw = new StreamWriter($"Historico\\{cpf}.txt");
+
+                    for (int i = 0; i < sintomas.Length; i++)
+                        sw.Write(sintomas[i] + ";");
+
+                    sw.Write(dias + ";");
+
+                    for (int i = 0; i < comorbidades.Length; i++)
+                        sw.Write(comorbidades[i] + ";");
+
+                    sw.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception: " + e.ToString());
+                }
+            }
+
+        }
+
     }
 }

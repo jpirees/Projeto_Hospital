@@ -42,7 +42,7 @@ namespace Projeto_Hospital
                             Console.WriteLine(fila_preferencial.Cabeca.ToString());
                             preferencial++;
 
-                            ChamarExame(fila_preferencial.Cabeca);
+                            ChamarExame(fila_preferencial, "FilaPreferencial");
 
                         }
                         else if (fila_normal.Elementos > 0)
@@ -50,7 +50,7 @@ namespace Projeto_Hospital
                             Console.WriteLine(fila_normal.Cabeca.ToString());
                             preferencial = 0;
 
-                            ChamarExame(fila_normal.Cabeca);
+                            ChamarExame(fila_normal, "FilaNormal");
                         }
                         else
                         {
@@ -62,9 +62,6 @@ namespace Projeto_Hospital
 
                     case "3":
                         BuscarPacienteNaFila();
-                        break;
-
-                    case "4":
                         break;
 
                     case "8":
@@ -177,92 +174,47 @@ namespace Projeto_Hospital
             return paciente;
         }
 
-        public static void ChamarExame(Paciente paciente)
+        public static void ChamarExame(Fila fila, string arquivo)
         {
-            string[] sintomas = new string[4] { "NÃO", "NÃO", "NÃO", "NÃO" };
 
-            string febre, dorCabeca, semPaladar, semOfato;
+            Console.WriteLine("\nQuantidade em dias com os sintomas: ");
+            int dias = int.Parse(Console.ReadLine());
 
-            do
-            {
-                Console.WriteLine("\nEsta ou esteve com febre? [S - SIM] [N - NÃO]");
-                febre = Console.ReadLine().ToUpper();
-                if (febre == "S")
-                {
-                    sintomas[0] = "SIM";
-                }
-                else if (febre == "N")
-                {
-                    sintomas[0] = "NÃO";
-                }
-                else
-                {
-                    Console.WriteLine("Opção inválida!!!");
-                }
-            } while (febre != "S" && febre != "N");
-            do
-            {
-                Console.WriteLine("\nEsta ou esteve com dor de cabeça? [S - SIM] [N - NÃO]");
-                dorCabeca = Console.ReadLine().ToUpper();
-                if (dorCabeca == "S")
-                {
-                    sintomas[1] = "SIM";
-                }
-                else if (dorCabeca == "N")
-                {
-                    sintomas[1] = "NÃO";
-                }
-                else
-                {
-                    Console.WriteLine("Opção inválida!!!");
-                }
-            } while (dorCabeca != "S" && dorCabeca != "N");
-            do
-            {
-                Console.WriteLine("\nEsta ou esteve com falta de paladar [S - SIM] [N - NÃO]");
-                semPaladar = Console.ReadLine().ToUpper();
-                if (semPaladar == "S")
-                {
-                    sintomas[2] = "SIM";
-                }
-                else if (semPaladar == "N")
-                {
-                    sintomas[2] = "NÃO";
-                }
-                else
-                {
-                    Console.WriteLine("Opção inválida!!!");
-                }
-            } while (semPaladar != "S" && semPaladar != "N");
-            do
-            {
-                Console.WriteLine("\nEsta ou esteve com falta de ofato? [S - SIM] [N - NÃO]");
-                semOfato = Console.ReadLine().ToUpper();
-                if (semOfato == "S")
-                {
-                    sintomas[3] = "SIM";
-                }
-                else if (semOfato == "N")
-                {
-                    sintomas[3] = "NÃO";
-                }
-                else
-                {
-                    Console.WriteLine("Opção inválida!!!");
-                }
 
-            } while (semOfato != "S" && semOfato != "N");
+            string[] sintomas = Sintomas();
+
+            string[] comorbidades = Comorbidades();
+
 
             Console.Clear();
 
-            Console.WriteLine(paciente.ToString());
+            Console.WriteLine(fila.Cabeca.ToString());
 
+            Console.WriteLine("\nSintomas:");
             Console.WriteLine($"\nFebre: {sintomas[0]} \n" +
                 $"Dor de Cabeça: {sintomas[1]}\n" +
                 $"Falta de Paladar: {sintomas[2]}\n" +
                 $"Falta de Olfato:  {sintomas[3]}");
+            Console.WriteLine($"\nQuantidade de dias com sintomas: {dias}");
 
-            Console.ReadLine();
+
+            Console.Write("\nComorbidades: ");
+
+
+            if (comorbidades[0] == null)
+                Console.WriteLine("Nenhuma");
+            else
+            {
+                Console.WriteLine();
+                foreach (string comorbidade in comorbidades)
+                    if (comorbidade != null)
+                        Console.WriteLine(comorbidade);
+            }
+
+            fila.Cabeca.SalvarFichaDoPaciente(fila.Cabeca.CPF, sintomas, dias, comorbidades);
+            
+            fila.RemoverDadosDoArquivo(fila, arquivo);
+
         }
 
         private static void BuscarPacienteNaFila()
@@ -293,5 +245,128 @@ namespace Projeto_Hospital
         }
 
 
+
+        private static string[] Sintomas()
+        {
+            string[] sintomas = new string[4] { "NÃO", "NÃO", "NÃO", "NÃO" };
+
+            string febre, dorCabeca, semPaladar, semOfato;
+
+            do
+            {
+                Console.WriteLine("\nEsta ou esteve com febre? [S - SIM] [N - NÃO]");
+                febre = Console.ReadLine().ToUpper();
+                if (febre == "S")
+                {
+                    sintomas[0] = "SIM";
+                }
+                else if (febre == "N")
+                {
+                    sintomas[0] = "NÃO";
+                }
+                else
+                {
+                    Console.WriteLine("Opção inválida!!!");
+                }
+            } while (febre != "S" && febre != "N");
+
+            do
+            {
+                Console.WriteLine("\nEsta ou esteve com dor de cabeça? [S - SIM] [N - NÃO]");
+                dorCabeca = Console.ReadLine().ToUpper();
+                if (dorCabeca == "S")
+                {
+                    sintomas[1] = "SIM";
+                }
+                else if (dorCabeca == "N")
+                {
+                    sintomas[1] = "NÃO";
+                }
+                else
+                {
+                    Console.WriteLine("Opção inválida!!!");
+                }
+            } while (dorCabeca != "S" && dorCabeca != "N");
+
+            do
+            {
+                Console.WriteLine("\nEsta ou esteve com falta de paladar [S - SIM] [N - NÃO]");
+                semPaladar = Console.ReadLine().ToUpper();
+                if (semPaladar == "S")
+                {
+                    sintomas[2] = "SIM";
+                }
+                else if (semPaladar == "N")
+                {
+                    sintomas[2] = "NÃO";
+                }
+                else
+                {
+                    Console.WriteLine("Opção inválida!!!");
+                }
+            } while (semPaladar != "S" && semPaladar != "N");
+
+            do
+            {
+                Console.WriteLine("\nEsta ou esteve com falta de ofato? [S - SIM] [N - NÃO]");
+                semOfato = Console.ReadLine().ToUpper();
+                if (semOfato == "S")
+                {
+                    sintomas[3] = "SIM";
+                }
+                else if (semOfato == "N")
+                {
+                    sintomas[3] = "NÃO";
+                }
+                else
+                {
+                    Console.WriteLine("Opção inválida!!!");
+                }
+
+            } while (semOfato != "S" && semOfato != "N");
+
+
+            return sintomas;
+        }
+
+        public static string[] Comorbidades()
+        {
+            string[] comorbidadeArray = new string[5] { null, null, null, null, null };
+
+            Console.WriteLine("\nPossui comorbidade? [S - SIM] [N - NÃO]");
+            string comorbidade = Console.ReadLine().ToUpper();
+            int i = 1, x = 0;
+
+            do
+            {
+                if (comorbidade == "N")
+                {
+                    break;
+                }
+
+                do
+                {
+                    if (comorbidade != "S" && comorbidade != "N")
+                    {
+                        Console.WriteLine("Opção inválida, tente novamente!");
+                        Console.WriteLine("Possui comorbidade? [S - SIM] [N - NÃO]");
+                        comorbidade = Console.ReadLine().ToUpper();
+                    }
+                } while (comorbidade != "S" && comorbidade != "N");
+
+                if (comorbidade == "S")
+                {
+                    Console.Write($"\nInforme a comorbidade {i}: ");
+                    comorbidadeArray[x] = Console.ReadLine();
+                    Console.WriteLine("Possui mais alguma comorbidade? [S - SIM] [N - NÃO]");
+                    comorbidade = Console.ReadLine().ToUpper();
+                    x++;
+                    i++;
+                }
+
+            } while (comorbidade != "N");
+
+            return comorbidadeArray;
+        }
     }
 }
