@@ -9,16 +9,20 @@ namespace Projeto_Hospital
 {
     internal class Fila
     {
+
         public Paciente Cabeca { get; set; }
         public Paciente Cauda { get; set; }
         public int Elementos { get; set; }
+        public string PathFile { get; set; }
 
         public Fila()
         {
             Cabeca = null;
             Cauda = null;
             Elementos = 0;
+            PathFile = DateTime.Now.ToString("dd/MM/yyyy").Replace("/", "_");
         }
+
 
 
         public void Imprimir()
@@ -83,8 +87,7 @@ namespace Projeto_Hospital
 
             try
             {
-
-                StreamReader sr = new StreamReader($"{arquivo}.txt");
+                StreamReader sr = new StreamReader($"{PathFile}\\{arquivo}.txt");
 
                 string line = sr.ReadLine();
 
@@ -106,7 +109,7 @@ namespace Projeto_Hospital
 
                 if (!aguardandoNaFila)
                 {
-                    StreamWriter sw = new StreamWriter($"{arquivo}.txt", append: true);
+                    StreamWriter sw = new StreamWriter($"{PathFile}\\{arquivo}.txt", append: true);
                     sw.WriteLine($"{paciente.CPF};{paciente.Nome};{paciente.DataNasc.ToString("dd/MM/yyyy")};{paciente.Sexo};");
                     sw.Close();
 
@@ -122,13 +125,18 @@ namespace Projeto_Hospital
         public void CarregarDadosDoArquivo(Fila fila, string arquivo)
         {
             bool arquivoFila = false;
+            bool diretorioFila = false;
+
 
             try
             {
-                if (File.Exists($"{arquivo}.txt"))
-                    arquivoFila = true;
+                if (Directory.Exists(PathFile))
+                    diretorioFila = true;
                 else
-                    File.Create($"{arquivo}.txt").Close();
+                {
+                    Directory.CreateDirectory(PathFile);
+                    diretorioFila = true;
+                }
 
             }
             catch (Exception e)
@@ -136,35 +144,55 @@ namespace Projeto_Hospital
                 Console.WriteLine("Exception: " + e.ToString());
             }
 
-
-            if (arquivoFila)
+            if (diretorioFila)
             {
+
                 try
                 {
-                    StreamReader sr = new StreamReader($"{arquivo}.txt");
+                    if (File.Exists($"{PathFile}\\{arquivo}.txt"))
+                        arquivoFila = true;
+                    else
+                        File.Create($"{PathFile}\\{arquivo}.txt").Close();
 
-                    string line = sr.ReadLine();
-
-                    while (line != null)
-                    {
-                        string[] dados = line.Split(";");
-
-                        Paciente paciente = new Paciente(dados[0], dados[1], DateTime.Parse(dados[2]), dados[3]);
-
-                        fila.Inserir(paciente);
-
-                        line = sr.ReadLine();
-                    }
-
-                    sr.Close();
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("Exception: " + e.ToString());
                 }
+
+
+                if (arquivoFila)
+                {
+                    try
+                    {
+                        StreamReader sr = new StreamReader($"{PathFile}\\{arquivo}.txt");
+
+                        string line = sr.ReadLine();
+
+                        while (line != null)
+                        {
+                            string[] dados = line.Split(";");
+
+                            Paciente paciente = new Paciente(dados[0], dados[1], DateTime.Parse(dados[2]), dados[3]);
+
+                            fila.Inserir(paciente);
+
+                            line = sr.ReadLine();
+                        }
+
+                        sr.Close();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Exception: " + e.ToString());
+                    }
+                }
             }
 
+
         }
+
+
 
         public bool Vazia()
         {

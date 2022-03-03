@@ -16,6 +16,8 @@ namespace Projeto_Hospital
             string acao;
             int preferencial = 0;
 
+            int senhas = 0;
+
             do
             {
                 Console.Clear();
@@ -29,23 +31,40 @@ namespace Projeto_Hospital
 
                     case "1":
                         NovoPaciente();
+                        senhas++;
+
                         break;
 
                     case "2":
+
                         if (fila_preferencial.Elementos > 0 && preferencial < 2)
                         {
                             Console.WriteLine(fila_preferencial.Cabeca.ToString());
                             preferencial++;
+
+                            ChamarExame(fila_preferencial.Cabeca);
+
+                        }
+                        else if (fila_normal.Elementos > 0)
+                        {
+                            Console.WriteLine(fila_normal.Cabeca.ToString());
+                            preferencial = 0;
+
+                            ChamarExame(fila_normal.Cabeca);
                         }
                         else
                         {
-                            Console.WriteLine(fila_normal.Cabeca.ToString());
+                            Console.Clear();
+                            Console.WriteLine("As filas estão vazias.");
                             preferencial = 0;
                         }
                         break;
 
                     case "3":
                         BuscarPacienteNaFila();
+                        break;
+
+                    case "4":
                         break;
 
                     case "8":
@@ -158,6 +177,94 @@ namespace Projeto_Hospital
             return paciente;
         }
 
+        public static void ChamarExame(Paciente paciente)
+        {
+            string[] sintomas = new string[4] { "NÃO", "NÃO", "NÃO", "NÃO" };
+
+            string febre, dorCabeca, semPaladar, semOfato;
+
+            do
+            {
+                Console.WriteLine("\nEsta ou esteve com febre? [S - SIM] [N - NÃO]");
+                febre = Console.ReadLine().ToUpper();
+                if (febre == "S")
+                {
+                    sintomas[0] = "SIM";
+                }
+                else if (febre == "N")
+                {
+                    sintomas[0] = "NÃO";
+                }
+                else
+                {
+                    Console.WriteLine("Opção inválida!!!");
+                }
+            } while (febre != "S" && febre != "N");
+            do
+            {
+                Console.WriteLine("\nEsta ou esteve com dor de cabeça? [S - SIM] [N - NÃO]");
+                dorCabeca = Console.ReadLine().ToUpper();
+                if (dorCabeca == "S")
+                {
+                    sintomas[1] = "SIM";
+                }
+                else if (dorCabeca == "N")
+                {
+                    sintomas[1] = "NÃO";
+                }
+                else
+                {
+                    Console.WriteLine("Opção inválida!!!");
+                }
+            } while (dorCabeca != "S" && dorCabeca != "N");
+            do
+            {
+                Console.WriteLine("\nEsta ou esteve com falta de paladar [S - SIM] [N - NÃO]");
+                semPaladar = Console.ReadLine().ToUpper();
+                if (semPaladar == "S")
+                {
+                    sintomas[2] = "SIM";
+                }
+                else if (semPaladar == "N")
+                {
+                    sintomas[2] = "NÃO";
+                }
+                else
+                {
+                    Console.WriteLine("Opção inválida!!!");
+                }
+            } while (semPaladar != "S" && semPaladar != "N");
+            do
+            {
+                Console.WriteLine("\nEsta ou esteve com falta de ofato? [S - SIM] [N - NÃO]");
+                semOfato = Console.ReadLine().ToUpper();
+                if (semOfato == "S")
+                {
+                    sintomas[3] = "SIM";
+                }
+                else if (semOfato == "N")
+                {
+                    sintomas[3] = "NÃO";
+                }
+                else
+                {
+                    Console.WriteLine("Opção inválida!!!");
+                }
+
+            } while (semOfato != "S" && semOfato != "N");
+
+            Console.Clear();
+
+            Console.WriteLine(paciente.ToString());
+
+            Console.WriteLine($"\nFebre: {sintomas[0]} \n" +
+                $"Dor de Cabeça: {sintomas[1]}\n" +
+                $"Falta de Paladar: {sintomas[2]}\n" +
+                $"Falta de Olfato:  {sintomas[3]}");
+
+            Console.ReadLine();
+        }
+
         private static void BuscarPacienteNaFila()
         {
             Console.Clear();
@@ -185,6 +292,6 @@ namespace Projeto_Hospital
             }
         }
 
-       
+
     }
 }
