@@ -9,8 +9,6 @@ namespace Projeto_Hospital
 {
     internal class Paciente
     {
-        public string PathFile = @"C:\Users\Junior\source\repos\Projeto_Hospital\Projeto_Hospital\bin\Debug\net5.0";
-
         public string CPF { get; set; }
         public string Nome { get; set; }
         public DateTime DataNasc { get; set; }
@@ -38,11 +36,11 @@ namespace Projeto_Hospital
             return $"\nCPF: {CPF}\nNome: {Nome}\nDt. Nasc.: {DataNasc.ToString("dd/MM/yyyy")}\nSexo: {Sexo}";
         }
 
-        public void SalvarInformacoesPaciente()
+        public void SalvarInformacoesDoPacienteNoArquivo()
         {
             try
             {
-                StreamWriter sw = new StreamWriter(PathFile + "\\Pacientes.txt", append: true);
+                StreamWriter sw = new StreamWriter("Pacientes.txt", append: true);
                 sw.WriteLine($"{CPF};{Nome};{DataNasc.ToString("dd/MM/yyyy")};{Sexo};");
                 sw.Close();
             }
@@ -52,15 +50,15 @@ namespace Projeto_Hospital
             }
         }
 
-        public Paciente BuscarInformacoesPaciente(string cpf)
+        public Paciente BuscarPacienteNoArquivo(string cpf)
         {
             Paciente paciente;
 
             try
             {
-                if (!File.Exists($"{PathFile}\\Pacientes.txt"))
+                if (!File.Exists("Pacientes.txt"))
                 {
-                    File.Create($"{PathFile}\\Pacientes.txt").Close();
+                    File.Create("Pacientes.txt").Close();
                     return null;
                 }
                 
@@ -72,7 +70,7 @@ namespace Projeto_Hospital
 
             try
             {
-                StreamReader sr = new StreamReader($"{PathFile}\\Pacientes.txt");
+                StreamReader sr = new StreamReader("Pacientes.txt");
                 string line = sr.ReadLine();
 
                 while (line != null)

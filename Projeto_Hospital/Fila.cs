@@ -9,8 +9,6 @@ namespace Projeto_Hospital
 {
     internal class Fila
     {
-        public string PathFile = @"C:\Users\Junior\source\repos\Projeto_Hospital\Projeto_Hospital\bin\Debug\net5.0";
-
         public Paciente Cabeca { get; set; }
         public Paciente Cauda { get; set; }
         public int Elementos { get; set; }
@@ -23,6 +21,24 @@ namespace Projeto_Hospital
         }
 
 
+        public void Imprimir()
+        {
+            if (Elementos == 0)
+            {
+                Console.WriteLine("[ A fila está vazia ]");
+                return;
+            }
+
+            Paciente paciente = Cabeca;
+
+            do
+            {
+                Console.WriteLine(paciente.ToString());
+                Console.WriteLine("\n********************************************");
+                paciente = paciente.Proximo;
+
+            } while (paciente != null);
+        }
 
         public void Inserir(Paciente paciente)
         {
@@ -33,43 +49,42 @@ namespace Projeto_Hospital
             }
             else
             {
-                Paciente aux = Cabeca;
-
-                do
-                {
-                    if (paciente.CPF == aux.CPF)
-                        break;
-                    else
-                    {
-                        Cauda.Proximo = paciente;
-                        paciente.Anterior = Cauda;
-                        Cauda = paciente;
-                    }
-                } while (aux != null);
-
+                Cauda.Proximo = paciente;
+                paciente.Anterior = Cauda;
+                Cauda = paciente;
             }
 
             Elementos++;
         }
-        public void InserirInformacoesDoPaciente(Paciente paciente, string arquivo)
+
+        public Paciente Buscar(string cpf)
+        {
+            if (Elementos == 0) return null;
+
+            Paciente paciente = Cabeca;
+
+            do
+            {
+                if (cpf == paciente.CPF)
+                    return paciente;
+
+                paciente = paciente.Proximo;
+
+            } while (paciente != null);
+
+            return null;
+        }
+
+
+
+        public void InserirDadosNoArquivo(Paciente paciente, string arquivo)
         {
             bool aguardandoNaFila = false;
 
             try
             {
-                if (!File.Exists($"{PathFile}\\{arquivo}.txt"))
-                    File.Create($"{PathFile}\\{arquivo}.txt").Close();
 
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Exception: " + e.ToString());
-            }
-
-            try
-            {
-
-                StreamReader sr = new StreamReader($"{PathFile}\\{arquivo}.txt");
+                StreamReader sr = new StreamReader($"{arquivo}.txt");
 
                 string line = sr.ReadLine();
 
@@ -91,9 +106,11 @@ namespace Projeto_Hospital
 
                 if (!aguardandoNaFila)
                 {
-                    StreamWriter sw = new StreamWriter($"{PathFile}\\{arquivo}.txt", append: true);
+                    StreamWriter sw = new StreamWriter($"{arquivo}.txt", append: true);
                     sw.WriteLine($"{paciente.CPF};{paciente.Nome};{paciente.DataNasc.ToString("dd/MM/yyyy")};{paciente.Sexo};");
                     sw.Close();
+
+                    Inserir(paciente);
                 }
             }
             catch (Exception e)
@@ -102,21 +119,52 @@ namespace Projeto_Hospital
             }
         }
 
-        public void Imprimir()
+        public void CarregarDadosDoArquivo(Fila fila, string arquivo)
         {
-            if (Elementos == 0) return;
+            bool arquivoFila = false;
 
-            Paciente paciente = Cabeca;
-
-            do
+            try
             {
-                Console.WriteLine(paciente.ToString());
+                if (File.Exists($"{arquivo}.txt"))
+                    arquivoFila = true;
+                else
+                    File.Create($"{arquivo}.txt").Close();
 
-                paciente = paciente.Proximo;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: " + e.ToString());
+            }
 
-            } while (paciente != null);
+
+            if (arquivoFila)
+            {
+                try
+                {
+                    StreamReader sr = new StreamReader($"{arquivo}.txt");
+
+                    string line = sr.ReadLine();
+
+                    while (line != null)
+                    {
+                        string[] dados = line.Split(";");
+
+                        Paciente paciente = new Paciente(dados[0], dados[1], DateTime.Parse(dados[2]), dados[3]);
+
+                        fila.Inserir(paciente);
+
+                        line = sr.ReadLine();
+                    }
+
+                    sr.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception: " + e.ToString());
+                }
+            }
+
         }
-
 
         public bool Vazia()
         {

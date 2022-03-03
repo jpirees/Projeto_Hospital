@@ -10,8 +10,11 @@ namespace Projeto_Hospital
 
         static void Main(string[] args)
         {
+            fila_normal.CarregarDadosDoArquivo(fila_normal, "FilaNormal");
+            fila_preferencial.CarregarDadosDoArquivo(fila_preferencial, "FilaPreferencial");
 
             string acao;
+            int preferencial = 0;
 
             do
             {
@@ -29,7 +32,32 @@ namespace Projeto_Hospital
                         break;
 
                     case "2":
+                        if (fila_preferencial.Elementos > 0 && preferencial < 2)
+                        {
+                            Console.WriteLine(fila_preferencial.Cabeca.ToString());
+                            preferencial++;
+                        }
+                        else
+                        {
+                            Console.WriteLine(fila_normal.Cabeca.ToString());
+                            preferencial = 0;
+                        }
+                        break;
+
+                    case "3":
+                        BuscarPacienteNaFila();
+                        break;
+
+                    case "8":
                         Console.Clear();
+                        Console.WriteLine("******************** Fila Normal *******************");
+                        fila_normal.Imprimir();
+                        break;
+
+                    case "9":
+                        Console.Clear();
+                        Console.WriteLine("******************** Fila Preferencial *******************");
+                        fila_preferencial.Imprimir();
                         break;
 
                     default:
@@ -43,14 +71,16 @@ namespace Projeto_Hospital
             } while (acao != "0");
         }
 
-
-
-        public static string Menu()
+        private static string Menu()
         {
             Console.WriteLine("******************** Menu *******************");
-            Console.WriteLine("[1] Chamar Paciente"); // Cadastra cliente e faz triagem
-            Console.WriteLine("[2] Chamar Paciente para Exame"); // Faz exames e anamnese
-            Console.WriteLine("");
+            Console.WriteLine("[1] Chamar Paciente");
+            Console.WriteLine("[2] Chamar Paciente para Exame");
+            Console.WriteLine("[3] Buscar Paciente na Fila");
+            Console.WriteLine("*********************************************");
+            Console.WriteLine("[8] Visualizar Pacientes na Fila Normal");
+            Console.WriteLine("[9] Visualizar Pacientes na Fila Preferencial");
+            Console.WriteLine("*********************************************");
             Console.WriteLine("[0] Sair");
             Console.WriteLine("*********************************************");
             Console.WriteLine();
@@ -70,7 +100,7 @@ namespace Projeto_Hospital
             string cpf = Console.ReadLine();
             Console.WriteLine("\n***************************************************");
 
-            paciente = paciente.BuscarInformacoesPaciente(cpf);
+            paciente = paciente.BuscarPacienteNoArquivo(cpf);
 
             if (paciente != null)
             {
@@ -84,18 +114,13 @@ namespace Projeto_Hospital
                 paciente = CadastrarPaciente(cpf);
 
             if ((DateTime.Now.Year - paciente.DataNasc.Year) >= 60)
-            {
-                fila_preferencial.Inserir(paciente);
-                fila_preferencial.InserirInformacoesDoPaciente(paciente, "FilaPreferencial");
-            }
+                fila_preferencial.InserirDadosNoArquivo(paciente, "FilaPreferencial");
             else
-            {
-                fila_normal.Inserir(paciente);
-                fila_normal.InserirInformacoesDoPaciente(paciente, "FilaNormal");
-            }
+                fila_normal.InserirDadosNoArquivo(paciente, "FilaNormal");
+
         }
 
-        public static Paciente CadastrarPaciente(string cpf)
+        private static Paciente CadastrarPaciente(string cpf)
         {
             Console.Clear();
 
@@ -128,11 +153,38 @@ namespace Projeto_Hospital
 
             Paciente paciente = new Paciente(cpf, nome, dataNasc, sexo);
 
-            paciente.SalvarInformacoesPaciente();
+            paciente.SalvarInformacoesDoPacienteNoArquivo();
 
             return paciente;
         }
 
+        private static void BuscarPacienteNaFila()
+        {
+            Console.Clear();
 
+            Paciente paciente = new Paciente();
+
+            Console.WriteLine("****************** Buscar Paciente na Fila ****************");
+            Console.Write("\nInforme o CPF: ");
+            string cpf = Console.ReadLine();
+            Console.WriteLine("\n*********************************************************");
+
+            if ((paciente = fila_normal.Buscar(cpf)) != null)
+            {
+                Console.WriteLine(paciente.ToString());
+                Console.WriteLine("Aguardando na fila normal");
+            }
+            else if ((paciente = fila_preferencial.Buscar(cpf)) != null)
+            {
+                Console.WriteLine(paciente.ToString());
+                Console.WriteLine("Aguardando na fila preferencial");
+            }
+            else
+            {
+                Console.WriteLine("Paciente não está em nenhuma fila.");
+            }
+        }
+
+       
     }
 }
