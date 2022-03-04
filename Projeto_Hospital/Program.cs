@@ -36,14 +36,12 @@ namespace Projeto_Hospital
                         break;
 
                     case "2":
-
                         if (fila_preferencial.Elementos > 0 && preferencial < 2)
                         {
                             Console.WriteLine(fila_preferencial.Cabeca.ToString());
                             preferencial++;
 
                             ChamarExame(fila_preferencial, "FilaPreferencial");
-
                         }
                         else if (fila_normal.Elementos > 0)
                         {
@@ -64,13 +62,17 @@ namespace Projeto_Hospital
                         BuscarPacienteNaFila();
                         break;
 
-                    case "8":
+                    case "4":
+                        BuscarHistorico();
+                        break;
+
+                    case "5":
                         Console.Clear();
                         Console.WriteLine("******************** Fila Normal *******************");
                         fila_normal.Imprimir();
                         break;
 
-                    case "9":
+                    case "6":
                         Console.Clear();
                         Console.WriteLine("******************** Fila Preferencial *******************");
                         fila_preferencial.Imprimir();
@@ -90,12 +92,13 @@ namespace Projeto_Hospital
         private static string Menu()
         {
             Console.WriteLine("******************** Menu *******************");
-            Console.WriteLine("[1] Chamar Paciente");
+            Console.WriteLine("[1] Chamar Próximo Paciente");
             Console.WriteLine("[2] Chamar Paciente para Exame");
             Console.WriteLine("[3] Buscar Paciente na Fila");
+            Console.WriteLine("[4] Buscar Histórico do Paciente");
             Console.WriteLine("*********************************************");
-            Console.WriteLine("[8] Visualizar Pacientes na Fila Normal");
-            Console.WriteLine("[9] Visualizar Pacientes na Fila Preferencial");
+            Console.WriteLine("[5] Visualizar Pacientes na Fila Normal");
+            Console.WriteLine("[6] Visualizar Pacientes na Fila Preferencial");
             Console.WriteLine("*********************************************");
             Console.WriteLine("[0] Sair");
             Console.WriteLine("*********************************************");
@@ -176,6 +179,27 @@ namespace Projeto_Hospital
 
         public static void ChamarExame(Fila fila, string arquivo)
         {
+            Console.Clear();
+
+            Console.WriteLine(fila.Cabeca.ToString());
+
+            string opcao;
+
+            do
+            {
+                Console.WriteLine("\nQual o resultado do teste de Covid-19?");
+                Console.WriteLine("[1] Positivo");
+                Console.WriteLine("[2] Negativo");
+                Console.WriteLine("[3] Não Reagente");
+                opcao = Console.ReadLine();
+
+            } while (opcao != "1" && opcao != "2" && opcao != "3");
+
+            string resultadoTeste = (opcao == "1")
+                ? "Positivo"
+                : (opcao == "2")
+                ? "Negativo"
+                : "Não Reagente";
 
             Console.WriteLine("\nQuantidade em dias com os sintomas: ");
             int dias = int.Parse(Console.ReadLine());
@@ -190,16 +214,17 @@ namespace Projeto_Hospital
 
             Console.WriteLine(fila.Cabeca.ToString());
 
-            Console.WriteLine("\nSintomas:");
-            Console.WriteLine($"\nFebre: {sintomas[0]} \n" +
+            Console.WriteLine($"\nResultado teste de Covid: {resultadoTeste}");
+
+            Console.WriteLine("\n[Sintomas]");
+            Console.WriteLine($"Febre: {sintomas[0]} \n" +
                 $"Dor de Cabeça: {sintomas[1]}\n" +
                 $"Falta de Paladar: {sintomas[2]}\n" +
                 $"Falta de Olfato:  {sintomas[3]}");
             Console.WriteLine($"\nQuantidade de dias com sintomas: {dias}");
 
 
-            Console.Write("\nComorbidades: ");
-
+            Console.Write("\n[Comorbidades] ");
 
             if (comorbidades[0] == null)
                 Console.WriteLine("Nenhuma");
@@ -211,10 +236,38 @@ namespace Projeto_Hospital
                         Console.WriteLine(comorbidade);
             }
 
-            fila.Cabeca.SalvarFichaDoPaciente(fila.Cabeca.CPF, sintomas, dias, comorbidades);
-            
-            fila.RemoverDadosDoArquivo(fila, arquivo);
+            string acao;
 
+            do
+            {
+                Console.WriteLine($"\nO que deseja fazer com o paciente {fila.Cabeca.Nome}? ");
+                Console.WriteLine("[1] Dar alta");
+                Console.WriteLine("[2] Colocar em quarentena");
+                Console.WriteLine("[3] Mandar para emergência");
+
+                acao = Console.ReadLine();
+
+                switch (acao)
+                {
+                    case "1":
+                        fila.Cabeca.SalvarHistoricoDoPaciente(fila.Cabeca.CPF, resultadoTeste, sintomas, dias, comorbidades, "Liberado");
+                        fila.RemoverDadosDoArquivo(fila, arquivo);
+                        break;
+
+                    case "2":
+                        fila.Cabeca.SalvarHistoricoDoPaciente(fila.Cabeca.CPF, resultadoTeste, sintomas, dias, comorbidades, "Em Quarentena");
+                        fila.RemoverDadosDoArquivo(fila, arquivo);
+                        break;
+
+                    case "3":
+                        break;
+
+                    default:
+                        Console.WriteLine("Ação inválida");
+                        break;
+                }
+
+            } while (acao != "1" && acao != "2" && acao != "3");
         }
 
         private static void BuscarPacienteNaFila()
@@ -244,7 +297,33 @@ namespace Projeto_Hospital
             }
         }
 
+        private static void BuscarHistorico()
+        {
+            Console.Clear();
 
+            Paciente paciente = new Paciente();
+
+            Console.WriteLine("****************** Buscar Paciente ****************");
+            Console.Write("\nInforme o CPF: ");
+            string cpf = Console.ReadLine();
+            Console.WriteLine("\n***************************************************");
+
+            paciente = paciente.BuscarPacienteNoArquivo(cpf);
+
+            if (paciente != null)
+            {
+                Console.Clear();
+
+                Console.WriteLine("******************** Ficha do Paciente ******************");
+                Console.WriteLine(paciente.ToString());
+                Console.WriteLine("\n****************** Histórico do Paciente ****************");
+                paciente.CarregarHistoricoDoPaciente(cpf);
+                Console.WriteLine("\n*********************************************************");
+            }
+            else
+                Console.WriteLine("Paciente não encontrado");
+
+        }
 
         private static string[] Sintomas()
         {
@@ -308,7 +387,7 @@ namespace Projeto_Hospital
 
             do
             {
-                Console.WriteLine("\nEsta ou esteve com falta de ofato? [S - SIM] [N - NÃO]");
+                Console.WriteLine("\nEsta ou esteve com falta de olfato? [S - SIM] [N - NÃO]");
                 semOfato = Console.ReadLine().ToUpper();
                 if (semOfato == "S")
                 {
