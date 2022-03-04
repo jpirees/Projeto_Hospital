@@ -321,7 +321,7 @@ namespace Projeto_Hospital
                 Console.WriteLine("\n*********************************************************");
             }
             else
-                Console.WriteLine("Paciente não encontrado");
+                Console.WriteLine("Histórico não encontrado");
 
         }
 
@@ -329,17 +329,17 @@ namespace Projeto_Hospital
         {
             string[] sintomas = new string[4] { "NÃO", "NÃO", "NÃO", "NÃO" };
 
-            string febre, dorCabeca, semPaladar, semOfato;
+            string sintoma;
 
             do
             {
                 Console.WriteLine("\nEsta ou esteve com febre? [S - SIM] [N - NÃO]");
-                febre = Console.ReadLine().ToUpper();
-                if (febre == "S")
+                sintoma = Console.ReadLine().ToUpper();
+                if (sintoma == "S")
                 {
                     sintomas[0] = "SIM";
                 }
-                else if (febre == "N")
+                else if (sintoma == "N")
                 {
                     sintomas[0] = "NÃO";
                 }
@@ -347,17 +347,17 @@ namespace Projeto_Hospital
                 {
                     Console.WriteLine("Opção inválida!!!");
                 }
-            } while (febre != "S" && febre != "N");
+            } while (sintoma != "S" && sintoma != "N");
 
             do
             {
                 Console.WriteLine("\nEsta ou esteve com dor de cabeça? [S - SIM] [N - NÃO]");
-                dorCabeca = Console.ReadLine().ToUpper();
-                if (dorCabeca == "S")
+                sintoma = Console.ReadLine().ToUpper();
+                if (sintoma == "S")
                 {
                     sintomas[1] = "SIM";
                 }
-                else if (dorCabeca == "N")
+                else if (sintoma == "N")
                 {
                     sintomas[1] = "NÃO";
                 }
@@ -365,17 +365,17 @@ namespace Projeto_Hospital
                 {
                     Console.WriteLine("Opção inválida!!!");
                 }
-            } while (dorCabeca != "S" && dorCabeca != "N");
+            } while (sintoma != "S" && sintoma != "N");
 
             do
             {
                 Console.WriteLine("\nEsta ou esteve com falta de paladar [S - SIM] [N - NÃO]");
-                semPaladar = Console.ReadLine().ToUpper();
-                if (semPaladar == "S")
+                sintoma = Console.ReadLine().ToUpper();
+                if (sintoma == "S")
                 {
                     sintomas[2] = "SIM";
                 }
-                else if (semPaladar == "N")
+                else if (sintoma == "N")
                 {
                     sintomas[2] = "NÃO";
                 }
@@ -383,17 +383,17 @@ namespace Projeto_Hospital
                 {
                     Console.WriteLine("Opção inválida!!!");
                 }
-            } while (semPaladar != "S" && semPaladar != "N");
+            } while (sintoma != "S" && sintoma != "N");
 
             do
             {
                 Console.WriteLine("\nEsta ou esteve com falta de olfato? [S - SIM] [N - NÃO]");
-                semOfato = Console.ReadLine().ToUpper();
-                if (semOfato == "S")
+                sintoma = Console.ReadLine().ToUpper();
+                if (sintoma == "S")
                 {
                     sintomas[3] = "SIM";
                 }
-                else if (semOfato == "N")
+                else if (sintoma == "N")
                 {
                     sintomas[3] = "NÃO";
                 }
@@ -402,7 +402,7 @@ namespace Projeto_Hospital
                     Console.WriteLine("Opção inválida!!!");
                 }
 
-            } while (semOfato != "S" && semOfato != "N");
+            } while (sintoma != "S" && sintoma != "N");
 
 
             return sintomas;

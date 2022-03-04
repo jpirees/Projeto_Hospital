@@ -151,7 +151,6 @@ namespace Projeto_Hospital
 
         }
 
-
         public void CarregarHistoricoDoPaciente(string cpf)
         {
             bool historico = false;
